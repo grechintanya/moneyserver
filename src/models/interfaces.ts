@@ -1,15 +1,22 @@
 import { Request } from 'express';
-import { ObjectId } from 'mongoose';
+import { Types } from 'mongoose';
 
 export interface UserRequest extends Request {
   user: string;
 }
 
-type CategoryType = 'Income' | 'Expense';
+export type CategoryType = 'income' | 'expense';
 
 export interface CategoryInterface {
-  _id?: ObjectId;
-  userId: ObjectId;
+  _id?: Types.ObjectId;
+  userId?: Types.ObjectId;
   name: string;
   type: CategoryType;
+}
+
+export interface UserInterface {
+  _id?: Types.ObjectId;
+  username?: string,
+  email: string,
+  password: string
 }

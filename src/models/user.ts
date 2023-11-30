@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose';
+import { UserInterface } from './interfaces';
 
-const userSchema = new Schema({
+const userSchema = new Schema<UserInterface>({
   username: {
     type: String,
     required: true,
@@ -13,7 +14,6 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
-  refreshToken: String,
 });
 
 export default model('User', userSchema);

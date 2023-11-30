@@ -1,8 +1,10 @@
 import { Schema, model, Types } from 'mongoose';
+import {CategoryInterface} from './interfaces';
 
-const categorySchema = new Schema({
-  userID: {
-    type: Types.ObjectId,
+
+const categorySchema = new Schema<CategoryInterface>({
+  userId: {
+    type: Schema.Types.ObjectId,
     ref: 'User',
     required: true,
   },
