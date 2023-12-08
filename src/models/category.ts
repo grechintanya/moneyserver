@@ -1,6 +1,13 @@
 import { Schema, model, Types } from 'mongoose';
-import {CategoryInterface} from './interfaces';
 
+export type CategoryType = 'income' | 'expense';
+
+export interface CategoryInterface {
+  _id?: Types.ObjectId;
+  userId?: Types.ObjectId;
+  name: string;
+  type: CategoryType;
+};
 
 const categorySchema = new Schema<CategoryInterface>({
   userId: {

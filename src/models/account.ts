@@ -1,8 +1,19 @@
 import { Schema, model, Types } from 'mongoose';
 
-const accountSchema = new Schema({
-  userID: {
-    type: Types.ObjectId,
+export type Currency = 'грн.'
+
+export interface AccountInterface {
+  _id?: Types.ObjectId;
+  userId?: Types.ObjectId;
+  name: string;
+  mandatory?: boolean,
+  currency?: Currency;
+  balance?: number
+};
+
+const accountSchema = new Schema<AccountInterface>({
+  userId: {
+    type: Schema.Types.ObjectId,
     ref: 'User',
     required: true,
   },
@@ -10,14 +21,16 @@ const accountSchema = new Schema({
     type: String,
     required: true,
   },
+  mandatory: {
+    type: Boolean,
+    default: false
+  },
   currency: {
     type: String,
-    required: true,
     default: 'грн.',
   },
   balance: {
     type: Number,
-    required: true,
     default: 0,
   },
 });

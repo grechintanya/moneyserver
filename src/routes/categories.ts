@@ -11,7 +11,7 @@ const router = Router();
 
 router
   .route('/')
-  .get(categoryControllers.getAllCategory)
+  .get(categoryControllers.getAllCategories)
   .post(requestValidator(createCategoryValidationRules), categoryControllers.handleCreateCategory);
 
 router

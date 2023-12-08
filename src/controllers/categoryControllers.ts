@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { HttpException } from '../middleware';
 import { Category, CategoryInterface, CategoryType, UserRequest } from '../models';
 
-export const getAllCategory = async (req: Request, res: Response, next: NextFunction) => {
+export const getAllCategories = async (req: Request, res: Response, next: NextFunction) => {
   const userId = (req as UserRequest).user;
   const { categoryType } = req.query;
   try {

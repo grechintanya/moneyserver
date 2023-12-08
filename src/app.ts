@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
 import connectDB from './DBconnect';
-import { authRouter, categoryRouter } from './routes';
+import { authRouter, categoryRouter, accountRouter, operationRouter } from './routes';
 import { verifyJWT, errorHandler, HttpException } from './middleware';
 
 dotenv.config();
@@ -20,9 +20,9 @@ app.use(verifyJWT);
 
 app.use('/categories', categoryRouter);
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Hello, TypeScript Express!');
-});
+app.use('/accounts', accountRouter);
+
+app.use('/operations', operationRouter);
 
 app.get('/*', (req: Request, res: Response, next: NextFunction) => {
   throw new HttpException(404, 'Page not found');
