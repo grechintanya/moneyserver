@@ -4,9 +4,8 @@ import { Category, CategoryInterface, CategoryType, UserRequest } from '../model
 
 export const getAllCategories = async (req: Request, res: Response, next: NextFunction) => {
   const userId = (req as UserRequest).user;
-  const { categoryType } = req.query;
   try {
-    const categories = await Category.find({ userId: userId, type: categoryType as CategoryType });
+    const categories = await Category.find({ userId: userId });
     return res.json(categories);
   } catch (err) {
     next(err);

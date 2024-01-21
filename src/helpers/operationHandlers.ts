@@ -34,7 +34,7 @@ const handleTransferOperation = async (account: Document<AccountInterface> & Acc
 
 export const writeOperationIntoAccounts = async (userId: string, newOperation: OperationInterface): Promise<boolean> => {
     const opType = newOperation.type;
-    const account = await Account.findOne({ userId: userId, _id: newOperation.accountId });
+    const account = await Account.findOne({ userId: userId, _id: newOperation.account });
     if (!account) {
         throw new HttpException(400, 'Invalid account')
     }
@@ -43,7 +43,7 @@ export const writeOperationIntoAccounts = async (userId: string, newOperation: O
     } else if (opType === 'expense') {
         return await handleExpenseOperation(account, newOperation);
     } else if (opType === 'transfer') {
-        const recipientAccount = await Account.findOne({ userId: userId, _id: newOperation.recipientAccountId });
+        const recipientAccount = await Account.findOne({ userId: userId, _id: newOperation.recipientAccount });
         if (!recipientAccount) {
             throw new HttpException(400, 'Add second account!')
         }
@@ -55,7 +55,7 @@ export const writeOperationIntoAccounts = async (userId: string, newOperation: O
 
 export const removeOperationFromAccounts = async (userId: string, newOperation: OperationInterface): Promise<boolean> => {
     const opType = newOperation.type;
-    const account = await Account.findOne({ userId: userId, _id: newOperation.accountId });
+    const account = await Account.findOne({ userId: userId, _id: newOperation.account });
     if (!account) {
         throw new HttpException(400, 'Invalid account')
     }
@@ -64,7 +64,7 @@ export const removeOperationFromAccounts = async (userId: string, newOperation: 
     } else if (opType === 'expense') {
         return await handleIncomeOperation(account, newOperation);
     } else if (opType === 'transfer') {
-        const recipientAccount = await Account.findOne({ userId: userId, _id: newOperation.recipientAccountId });
+        const recipientAccount = await Account.findOne({ userId: userId, _id: newOperation.recipientAccount });
         if (!recipientAccount) {
             throw new HttpException(400, 'Add second account!')
         }

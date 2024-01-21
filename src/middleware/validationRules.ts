@@ -40,14 +40,14 @@ export const updateAccountValidationRules: ValidationChain[] = [
 
 export const createOperationValidationRules: ValidationChain[] = [
     body('type').isIn(['income', 'expense', 'transfer']).withMessage('Invalid operation type'),
-    body('date').optional().isDate().withMessage('Invalid date'),
+    body('date').optional().isISO8601().withMessage('Invalid date'),
     body('currency').optional().isIn(['грн.']).withMessage('Invalid currency'),
     body('amount').notEmpty().withMessage('Amount is required'),
     body('amount').isNumeric().withMessage('Amount should be a number'),
-    body('accountId').notEmpty().withMessage('Account is required'),
-    body('accountId').trim().isHexadecimal().isLength({ min: 24, max: 24 }).withMessage('Invalid account'),
-    body('categoryId').optional().trim().isHexadecimal().isLength({ min: 24, max: 24 }).withMessage('Invalid category'),
+    body('account').notEmpty().withMessage('Account is required'),
+    body('account').trim().isHexadecimal().isLength({ min: 24, max: 24 }).withMessage('Invalid account'),
+    body('category').optional().trim().isHexadecimal().isLength({ min: 24, max: 24 }).withMessage('Invalid category'),
     body('comment').optional().isLength({ max: 100 }).withMessage("Comment can't be more than 100 chars"),
-    body('recipientAccountId').optional().trim().isHexadecimal().isLength({ min: 24, max: 24 }).withMessage('Invalid recipient account'),
+    body('recipientAccount').optional().trim().isHexadecimal().isLength({ min: 24, max: 24 }).withMessage('Invalid recipient account'),
 ];
 

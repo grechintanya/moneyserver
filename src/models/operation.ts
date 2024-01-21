@@ -10,10 +10,10 @@ export interface OperationInterface {
     type: OperationType;
     currency: Currency;
     amount: number;
-    accountId: Types.ObjectId | string;
-    categoryId?: Types.ObjectId | string;
+    account: Types.ObjectId | string;
+    category?: Types.ObjectId | string;
     comment?: string;
-    recipientAccountId: Types.ObjectId | string;
+    recipientAccount?: Types.ObjectId | string;
 };
 
 const operationSchema = new Schema<OperationInterface>({
@@ -38,19 +38,19 @@ const operationSchema = new Schema<OperationInterface>({
         type: Number,
         required: true
     },
-    accountId: {
+    account: {
         type: Schema.Types.ObjectId,
         ref: 'Account',
         required: true
     },
-    categoryId: {
+    category: {
         type: Schema.Types.ObjectId,
         ref: 'Category',
     },
     comment: {
         type: String
     },
-    recipientAccountId: {
+    recipientAccount: {
         type: Schema.Types.ObjectId,
         ref: 'Account',
     },
