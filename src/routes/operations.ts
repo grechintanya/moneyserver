@@ -11,4 +11,10 @@ router.route('/')
 router.route('/:id')
     .delete(requestValidator(idValidationRules), operationControllers.handleDeleteOperation);
 
+router.route('/:id')
+    .patch(requestValidator(idValidationRules), operationControllers.handleUpdateOperation)
+
+router.route('/number/:id')
+    .get(requestValidator(idValidationRules), operationControllers.getOperationsNumberByCategory)
+
 export default router;

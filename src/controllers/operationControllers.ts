@@ -20,13 +20,24 @@ export const getAllOperations = async (req: Request, res: Response, next: NextFu
     }
     try {
         const operations = await Operation.find(filterObj)
-        .populate('account', 'name').populate('category', 'name').populate('recipientAccount','name')
-        .sort('-date').limit(opNumber);
+            .populate('account', 'name').populate('category', 'name').populate('recipientAccount', 'name')
+            .sort('-date').limit(opNumber);
         return res.json(operations);
     } catch (err) {
         next(err);
     }
 };
+
+export const getOperationsNumberByCategory = async (req: Request, res: Response, next: NextFunction) => {
+    const userId = (req as UserRequest).user;
+    const categoryId = req.params.id;
+    try {
+        const opNumber = await Operation.countDocuments({ userId: userId, category: categoryId });
+        return res.json({ category: categoryId, number: opNumber });
+    } catch (err) {
+        next(err);
+    }
+}
 
 export const handleCreateOperation = async (req: Request, res: Response, next: NextFunction) => {
     const userId = (req as UserRequest).user;
@@ -36,7 +47,7 @@ export const handleCreateOperation = async (req: Request, res: Response, next: N
         if (result) {
             let savedOperation = await Operation.create({ ...newOperation, userId: userId, date: new Date(newOperation.date) });
             savedOperation = await Operation.findById(savedOperation._id).populate('account', 'name')
-            .populate('category', 'name').populate('recipientAccount','name');
+                .populate('category', 'name').populate('recipientAccount', 'name');
             return res.status(201).json({ result: savedOperation });
         } else {
             throw new HttpException(500, "Operation wasn't saved")
@@ -45,6 +56,20 @@ export const handleCreateOperation = async (req: Request, res: Response, next: N
         next(err);
     }
 };
+
+//check for errors!
+export const handleUpdateOperation = async (req: Request, res: Response, next: NextFunction) => {
+    const userId = (req as UserRequest).user;
+    const id = req.params.id;
+    const { operation } = req.body;
+    try {
+        const result = await Operation.findByIdAndUpdate(id, operation);
+        return res.json(result);
+
+    } catch (err) {
+        next(err);
+    }
+}
 
 export const handleDeleteOperation = async (req: Request, res: Response, next: NextFunction) => {
     const userId = (req as UserRequest).user;

@@ -59,7 +59,6 @@ export const handleDeleteAccount = async (req: Request, res: Response, next: Nex
         }
         const result = await Operation.updateMany({ userID: userId, accountId: accountId },
             { accountId: anotherAccountId });
-        console.log(result);
         await Account.deleteOne({ userID: userId, _id: accountId });
         return res.json({ message: 'Account deleted' });
     } catch (err) {
