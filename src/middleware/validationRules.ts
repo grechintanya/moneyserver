@@ -15,39 +15,61 @@ export const idValidationRules: ValidationChain[] = [
     param('id').trim().isHexadecimal().isLength({ min: 24, max: 24 }).withMessage('Invalid ID')
 ];
 
-export const createCategoryValidationRules: ValidationChain[] = [
-    body('name').trim().notEmpty().withMessage('Name is required'),
-    body('name').trim().isLength({ min: 3, max: 20 }).withMessage("Name's length must be from 3 to 20 chars"),
-    body('type').trim().notEmpty().withMessage('Type is required'),
-    body('type').trim().isIn(['expense', 'income']).withMessage('Invalid type')
+const categoryValidationRules: ValidationChain[] = [
+    body('name').optional().trim().isLength({ min: 3, max: 20 }).withMessage("Name's length must be from 3 to 20 chars"),
+    body('type').optional().trim().isIn(['expense', 'income']).withMessage('Invalid type')
 ];
+
+export const createCategoryValidationRules: ValidationChain[] = [
+    ...categoryValidationRules,
+    body('name').trim().notEmpty().withMessage('Name is required'),
+    body('type').trim().notEmpty().withMessage('Type is required'),
+]
 
 export const updateCategoryValidationRules: ValidationChain[] = [
-    ...createCategoryValidationRules, ...idValidationRules
+    ...categoryValidationRules, ...idValidationRules
 ];
 
-export const createAccountValidationRules: ValidationChain[] = [
-    body('name').trim().notEmpty().withMessage('Name is required'),
-    body('name').trim().isLength({ min: 3, max: 20 }).withMessage("Name's length must be from 3 to 20 chars"),
+const accountValidationRules: ValidationChain[] = [
+    body('name').trim().optional().isLength({ min: 3, max: 20 }).withMessage("Name's length must be from 3 to 20 chars"),
     body('currency').optional().isIn(['грн.']).withMessage('Invalid currency'),
     body('mandatory').optional().isBoolean().withMessage('Mandatory must be false or true'),
-    body('balance').isNumeric().withMessage('Balance should be a number')
+    body('balance').optional().isNumeric().withMessage('Balance should be a number')
+]
+
+export const createAccountValidationRules: ValidationChain[] = [
+    ...accountValidationRules,
+    body('name').trim().notEmpty().withMessage('Name is required'),
+    body('balance').notEmpty().withMessage('Name is required')
 ];
 
 export const updateAccountValidationRules: ValidationChain[] = [
-    ...createAccountValidationRules, ...idValidationRules
+    ...accountValidationRules, ...idValidationRules
 ];
 
-export const createOperationValidationRules: ValidationChain[] = [
-    body('type').isIn(['income', 'expense', 'transfer']).withMessage('Invalid operation type'),
+const operationValidationRules: ValidationChain[] = [
+    body('type').optional().isIn(['income', 'expense', 'transfer']).withMessage('Invalid operation type'),
     body('date').optional().isISO8601().withMessage('Invalid date'),
     body('currency').optional().isIn(['грн.']).withMessage('Invalid currency'),
-    body('amount').notEmpty().withMessage('Amount is required'),
-    body('amount').isNumeric().withMessage('Amount should be a number'),
-    body('account').notEmpty().withMessage('Account is required'),
-    body('account').trim().isHexadecimal().isLength({ min: 24, max: 24 }).withMessage('Invalid account'),
+    body('amount').optional().isNumeric().withMessage('Amount should be a number'),
+    body('account').optional().trim().isHexadecimal().isLength({ min: 24, max: 24 }).withMessage('Invalid account'),
     body('category').optional().trim().isHexadecimal().isLength({ min: 24, max: 24 }).withMessage('Invalid category'),
     body('comment').optional().isLength({ max: 100 }).withMessage("Comment can't be more than 100 chars"),
     body('recipientAccount').optional().trim().isHexadecimal().isLength({ min: 24, max: 24 }).withMessage('Invalid recipient account'),
+]
+
+export const createOperationValidationRules: ValidationChain[] = [
+    body('amount').notEmpty().withMessage('Amount is required'),
+    body('account').notEmpty().withMessage('Account is required'),
+    ...operationValidationRules
 ];
+
+export const updateOperationValidationRules: ValidationChain[] = [
+    ...operationValidationRules, ...idValidationRules
+];
+
+export const moveOperationsValidationRules: ValidationChain[] = [
+    ...idValidationRules,
+    body('newCategory').trim().isHexadecimal().isLength({ min: 24, max: 24 }).withMessage('Invalid account'),
+]
 

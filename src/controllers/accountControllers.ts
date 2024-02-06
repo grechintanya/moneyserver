@@ -5,7 +5,7 @@ import { Account, AccountInterface, Operation, UserRequest } from '../models';
 export const getAllAccounts = async (req: Request, res: Response, next: NextFunction) => {
     const userId = (req as UserRequest).user;
     try {
-        const accounts = await Account.find({ userId: userId });
+        const accounts = await Account.find({ userId: userId }, '-__v');
         return res.json(accounts);
     } catch (err) {
         next(err);
@@ -22,7 +22,7 @@ export const handleCreateAccount = async (req: Request, res: Response, next: Nex
             currency: newAccount.currency,
             balance: newAccount.balance
         });
-        return res.status(201).json(result);
+        return res.status(201).json(result.toObject({ versionKey: false }));
     } catch (err) {
         next(err);
     }
@@ -37,7 +37,7 @@ export const handleUpdateAccount = async (req: Request, res: Response, next: Nex
         if (!result) {
             throw new HttpException(404, 'Account not found');
         }
-        return res.json(result);
+        return res.json(result.toObject({ versionKey: false }));
     } catch (err) {
         next(err);
     }
