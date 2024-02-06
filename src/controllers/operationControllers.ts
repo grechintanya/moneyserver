@@ -19,7 +19,7 @@ export const getAllOperations = async (req: Request, res: Response, next: NextFu
         filterObj = { ...filterObj, date: { $gte: fromDate, $lte: toDate } };
     }
     try {
-        const operations = await Operation.find(filterObj)
+        const operations = await Operation.find(filterObj, '-__v')
             .populate('account', 'name').populate('category', 'name').populate('recipientAccount', 'name')
             .sort('-date').limit(opNumber);
         return res.json(operations);
@@ -45,10 +45,10 @@ export const handleCreateOperation = async (req: Request, res: Response, next: N
     try {
         const result = await writeOperationIntoAccounts(userId, newOperation);
         if (result) {
-            let savedOperation = await Operation.create({ ...newOperation, userId: userId, date: new Date(newOperation.date) });
-            savedOperation = await Operation.findById(savedOperation._id).populate('account', 'name')
+            let savedOperation = await Operation.create({ ...newOperation, userId: userId });
+            savedOperation = await Operation.findById(savedOperation._id, '-__v').populate('account', 'name')
                 .populate('category', 'name').populate('recipientAccount', 'name');
-            return res.status(201).json({ result: savedOperation });
+            return res.status(201).json(savedOperation);
         } else {
             throw new HttpException(500, "Operation wasn't saved")
         }
@@ -57,15 +57,31 @@ export const handleCreateOperation = async (req: Request, res: Response, next: N
     }
 };
 
-//check for errors!
 export const handleUpdateOperation = async (req: Request, res: Response, next: NextFunction) => {
-    const userId = (req as UserRequest).user;
     const id = req.params.id;
-    const { operation } = req.body;
+    const userId = (req as UserRequest).user;
+    const operation: Partial<OperationInterface> = req.body;
     try {
-        const result = await Operation.findByIdAndUpdate(id, operation);
-        return res.json(result);
+        const result = await Operation.findOneAndUpdate({ userId: userId, _id: id }, operation, { returnDocument: 'after' });
+        if (result) {
+            return res.json(result.toObject({ versionKey: false }));
+        }
+        throw new HttpException(404, 'Operation not found')
+    } catch (err) {
+        next(err);
+    }
+}
 
+export const handleReplaceOperationsByCategory = async (req: Request, res: Response, next: NextFunction) => {
+    const userId = (req as UserRequest).user;
+    const categoryId = req.params.id;
+    const { newCategory } = req.body;
+    try {
+        const result = await Operation.updateMany({ userId: userId, category: categoryId }, { category: newCategory });
+        if (result.modifiedCount) {
+            return res.json({ message: `${result.modifiedCount} operations moved to category ${newCategory}` });
+        }
+        throw new HttpException(404, 'Operations not found');
     } catch (err) {
         next(err);
     }

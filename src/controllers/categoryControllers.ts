@@ -5,7 +5,7 @@ import { Category, CategoryInterface, CategoryType, Operation, UserRequest } fro
 export const getAllCategories = async (req: Request, res: Response, next: NextFunction) => {
   const userId = (req as UserRequest).user;
   try {
-    const categories = await Category.find({ userId: userId });
+    const categories = await Category.find({ userId: userId }, '-__v');
     return res.json(categories);
   } catch (err) {
     next(err);
@@ -21,7 +21,7 @@ export const handleCreateCategory = async (req: Request, res: Response, next: Ne
       name: newCategory.name,
       type: newCategory.type,
     });
-    return res.status(201).json(result);
+    return res.status(201).json(result.toObject({ versionKey: false }));
   } catch (err) {
     next(err);
   }
@@ -30,13 +30,13 @@ export const handleCreateCategory = async (req: Request, res: Response, next: Ne
 export const handleUpdateCategory = async (req: Request, res: Response, next: NextFunction) => {
   const id = req.params.id;
   const userId = (req as UserRequest).user;
-  const updatedCategory: CategoryInterface = req.body;
+  const { name } = req.body;
   try {
-    const result = await Category.findOneAndUpdate({ userID: userId, _id: id }, updatedCategory, { new: true });
+    const result = await Category.findOneAndUpdate({ userID: userId, _id: id }, { name }, { new: true });
     if (!result) {
       throw new HttpException(404, 'Category not found');
     }
-    return res.json(result);
+    return res.json(result.toObject({ versionKey: false }));
   } catch (err) {
     next(err);
   }
@@ -46,13 +46,13 @@ export const handleDeleteCategory = async (req: Request, res: Response, next: Ne
   const userId = (req as UserRequest).user;
   const id = req.params.id;
   try {
+    const opNumber = await Operation.countDocuments({ userId: userId, category: id });
+    if (opNumber) {
+      throw new HttpException(400, `Category includes ${opNumber} operations. Move them to another category`);
+    }
     const result = await Category.deleteOne({ userID: userId, _id: id });
     if (!result.deletedCount) {
       throw new HttpException(404, 'Category not found');
-    }
-    const opNumber = await Operation.find({ userId: userId, category: id });
-    if (opNumber) {
-      throw new HttpException(400, `Category includes ${opNumber} operations. Move them to another category`);
     }
     return res.json({ message: 'Category deleted' });
   } catch (err) {

@@ -13,22 +13,22 @@ connectDB();
 const allowedOrigins = ['http://localhost:4200'];
 
 const corsOptions = {
-    origin: (origin: string | undefined, callback:any) => {
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true)
-        } else {
-            callback(new Error('Not allowed by CORS'))
-        }
-    },
-    optionsSuccessStatus: 200
+  origin: (origin: string | undefined, callback: any) => {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
+  optionsSuccessStatus: 200
 };
 
 const credentials = (req: Request, res: Response, next: NextFunction) => {
-    const origin = req.headers.origin;
-    if (!origin || allowedOrigins.includes(origin)) {
-        res.header('Access-Control-Allow-Credentials', 'true');
-    }
-    next();
+  const origin = req.headers.origin;
+  if (!origin || allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Credentials', 'true');
+  }
+  next();
 }
 
 const app = express();
